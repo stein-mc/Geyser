@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SimpleFormWindow extends FormWindow {
+public class SimpleFormWindow extends FormWindow<SimpleFormResponse> {
 
     @Getter
     @Setter

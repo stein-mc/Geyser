@@ -185,7 +185,7 @@ public class LoginEncryptionUtils {
             return false;
 
         if(formId == AUTH_FORM_ID || formId == AUTH_DETAILS_FORM_ID) {
-            FormWindow window = windowCache.getWindows().remove(formId);
+            FormWindow<?> window = windowCache.getWindows().remove(formId);
             window.setResponse(formData.trim());
 
             if (!session.isLoggedIn()) {

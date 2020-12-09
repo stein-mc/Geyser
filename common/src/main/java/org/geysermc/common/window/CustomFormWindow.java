@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomFormWindow extends FormWindow {
+public class CustomFormWindow extends FormWindow<CustomFormResponse> {
 
     @Getter
     @Setter

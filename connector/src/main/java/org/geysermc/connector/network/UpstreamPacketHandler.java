@@ -150,6 +150,9 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
             return StatisticsUtils.handleListForm(session, packet.getFormData());
         }
 
+        if (session.getWindowCache().handleFormResponse(packet.getFormId(), packet.getFormData()))
+            return true;
+
         return LoginEncryptionUtils.authenticateFromForm(session, connector, packet.getFormId(), packet.getFormData());
     }
 

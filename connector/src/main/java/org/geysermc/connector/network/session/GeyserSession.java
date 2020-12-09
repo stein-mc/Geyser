@@ -63,21 +63,23 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.geysermc.common.window.CustomFormWindow;
 import org.geysermc.common.window.FormWindow;
+import org.geysermc.common.window.response.FormResponse;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.command.CommandSender;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.entity.Entity;
-import org.geysermc.connector.entity.player.SkullPlayerEntity;
 import org.geysermc.connector.entity.player.SessionPlayerEntity;
+import org.geysermc.connector.entity.player.SkullPlayerEntity;
 import org.geysermc.connector.inventory.PlayerInventory;
-import org.geysermc.connector.network.translators.chat.MessageTranslator;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.auth.AuthData;
 import org.geysermc.connector.network.session.auth.BedrockClientData;
 import org.geysermc.connector.network.session.cache.*;
+import org.geysermc.connector.network.session.form.FormListener;
 import org.geysermc.connector.network.translators.BiomeTranslator;
 import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
 import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
+import org.geysermc.connector.network.translators.chat.MessageTranslator;
 import org.geysermc.connector.network.translators.collision.CollisionManager;
 import org.geysermc.connector.network.translators.inventory.EnchantmentInventoryTranslator;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
@@ -294,7 +296,7 @@ public class GeyserSession implements CommandSender {
 
     /**
      * Stores the last text inputted into a sign.
-     *
+     * <p>
      * Bedrock sends packets every time you update the sign, Java only wants the final packet.
      * Until we determine that the user has finished editing, we save the sign's current status.
      */
@@ -621,12 +623,27 @@ public class GeyserSession implements CommandSender {
         return false;
     }
 
-     @Override
-     public String getLocale() {
+    @Override
+    public String getLocale() {
         return clientData.getLanguageCode();
-     }
+    }
 
-    public void sendForm(FormWindow window, int id) {
+    public void sendForm(FormWindow<?> window) {
+        windowCache.showWindow(window);
+    }
+
+    /**
+     * Sends a temporary form to this player that has a listener and will be removed after the response has been handled
+     *
+     * @param window       the window that should be sent
+     * @param formListener the listener that should be called when receiving a response
+     * @param <T>          type of the response
+     */
+    public <T extends FormResponse> void sendForm(FormWindow<T> window, FormListener<T> formListener) {
+        windowCache.showWindow(window, formListener);
+    }
+
+    public void sendForm(FormWindow<?> window, int id) {
         windowCache.showWindow(window, id);
     }
 
@@ -642,10 +659,6 @@ public class GeyserSession implements CommandSender {
 
     public InetSocketAddress getSocketAddress() {
         return this.upstream.getAddress();
-    }
-
-    public void sendForm(FormWindow window) {
-        windowCache.showWindow(window);
     }
 
     private void startGame() {
@@ -775,7 +788,7 @@ public class GeyserSession implements CommandSender {
 
     /**
      * Queue a packet to be sent to player.
-     * 
+     *
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacket(BedrockPacket packet) {
@@ -827,7 +840,7 @@ public class GeyserSession implements CommandSender {
      * Send a gamerule value to the client
      *
      * @param gameRule The gamerule to send
-     * @param value The value of the gamerule
+     * @param value    The value of the gamerule
      */
     public void sendGameRule(String gameRule, Object value) {
         GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();

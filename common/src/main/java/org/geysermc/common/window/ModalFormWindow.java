@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.geysermc.common.window.response.ModalFormResponse;
 
-public class ModalFormWindow extends FormWindow {
+public class ModalFormWindow extends FormWindow<ModalFormResponse> {
 
     @Getter
     @Setter

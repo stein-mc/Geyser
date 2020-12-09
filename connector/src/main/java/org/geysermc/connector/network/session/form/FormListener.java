@@ -23,37 +23,16 @@
  * @link https://github.com/GeyserMC/Geyser
  */
 
-package org.geysermc.common.window;
+package org.geysermc.connector.network.session.form;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 import org.geysermc.common.window.response.FormResponse;
 
-public abstract class FormWindow<T extends FormResponse> {
+public interface FormListener<T extends FormResponse> {
 
-    @Getter
-    private final String type;
+    void handleFormResponse(T formResponse);
 
-    @Getter
-    protected T response;
-
-    @Getter
-    @Setter
-    protected boolean closed;
-
-    public FormWindow(String type) {
-        this.type = type;
+    default void handleFormResponseCasted(FormResponse formResponse) {
+        //noinspection unchecked
+        this.handleFormResponse((T) formResponse);
     }
-
-    // Lombok won't work here, so we need to make our own method
-    public void setResponse(T response) {
-        this.response = response;
-    }
-
-    @JsonIgnore
-    public abstract String getJSONData();
-
-    public abstract void setResponse(String response);
-
 }
